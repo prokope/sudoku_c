@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 
 int main(void)
 {
@@ -11,22 +13,64 @@ int main(void)
         return 1; 
     }
 
-    char read_row[32], grid[4][16]; // Creating a string for rows and an array of strings for the grid
-    int row = 0, column = 0, scoreToWin = 0;
+    srand(time(NULL));
+    int randNum = rand() % 6 + 1;
+    char setting[5];
+    switch (randNum)
+    {
+        case 1:
+            strcpy(setting, "game1\n");
+            break;
+        case 2:
+            strcpy(setting, "game2\n");
+            break;
+        case 3:
+            strcpy(setting, "game3\n");
+            break;
+        case 4:
+            strcpy(setting, "game4\n");
+            break;
+        case 5:
+            strcpy(setting, "game5\n");
+            break;
+        case 6:
+            strcpy(setting, "game6\n");
+            break;
+        default:
+            break;
+    }
+
+    printf("Setting: %s\n", setting);
+
+    char read_row[512], grid[4][16]; // Creating a string for rows and an array of strings for the grid
+    int row = 0, column = 0, scoreToWin = 0, isTargetGrid = 0;
     while (fgets(read_row, sizeof(read_row), grids) != NULL)
     {
-        strcpy(grid[row], read_row);
-
-        for (int idx = 0; idx < 8; idx++)
+        if ( strcmp(read_row, setting) == 0 )
         {
-            if (read_row[idx] == '-')
-            {
-                scoreToWin += 1;
-            }
+            isTargetGrid = 1;
+            continue;
         }
-        row++;
+
+        if (isTargetGrid == 1)
+        {
+            if ( strcmp(read_row, "e\n") == 0 )
+            {
+                break;
+            }
+            strcpy(grid[row], read_row);
+            for (int idx = 0; idx < 8; idx++)
+            {
+                if (read_row[idx] == '-')
+                {
+                    scoreToWin += 1;
+                }
+            }
+            row++;
+        }
     }
     fclose(grids);
+
     printf("Blanks: %i\n", scoreToWin);
 
     int gameEnded = 0, score = 0;
@@ -44,6 +88,7 @@ int main(void)
 
         if (score == scoreToWin)
         {
+            printf("\nGame won!\n");
             gameEnded = 1;
             break;
         }
